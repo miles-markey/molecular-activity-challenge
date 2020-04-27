@@ -1,0 +1,20 @@
+data_national = readtable('Complications and Deaths - National.csv');
+data_state = readtable('Complications and Deaths - State.csv');
+data_hospital = readtable('Complications and Deaths - Hospital.csv');
+measureIds = data_hospital.MeasureID;
+uniqueIds = unique(measureIds);
+numberFlag = zeros(length(uniqueIds),1);
+
+for i=1:length(uniqueIds)
+    varTable = data_hospital(strcmp(data_hospital.MeasureID,uniqueIds(i,1)),:);
+    varTable2 = varTable(strcmp(varTable.ComparedToNational,'Worse Than the National Rate'),:);
+    numberFlag(i,1) = size(varTable2,1);
+end
+
+sortedIds = [];
+
+for i=1:length(numberFlag)
+    [~,varIndex] = max(numberFlag);
+    sortedIds = [sortedIds; uniqueIds(varIndex,1)];
+    numberFlag(varIndex,1) = 0;
+end
