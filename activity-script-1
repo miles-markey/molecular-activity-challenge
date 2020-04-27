@@ -1,0 +1,27 @@
+data_national = readtable('Complications and Deaths - National.csv');
+data_state = readtable('Complications and Deaths - State.csv');
+data_hospital = readtable('Complications and Deaths - Hospital.csv');
+
+%%
+
+complications = data_national.MeasureID;
+zipCodes = data_hospital.ZIPCode;
+uniqueZipCodes = unique(zipCodes);
+numberFlag = zeros(length(uniqueZipCodes),1);
+
+for i=1:length(uniqueZipCodes)
+    varTable = data_hospital(data_hospital.ZIPCode==uniqueZipCodes(i,1),:);
+    varTable2 = varTable(strcmp(varTable.ComparedToNational,'Worse Than the National Rate'),:);
+    numberFlag(i,1) = size(varTable2,1);
+end
+
+uniqueZipCodes(numberFlag==0) = [];
+numberFlag(numberFlag==0) = [];
+sortedZipCodes = zeros(length(uniqueZipCodes),1);
+
+for i=1:length(uniqueZipCodes)
+    [~,varIndex] = max(numberFlag);
+    sortedZipCodes(i,1) = uniqueZipCodes(varIndex,1);
+    numberFlag(varIndex,1) = 1;
+end
+    
